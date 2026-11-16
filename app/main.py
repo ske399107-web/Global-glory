@@ -11,6 +11,8 @@ from sqlalchemy.orm import DeclarativeBase,Mapped,mapped_column,sessionmaker,Ses
 from itsdangerous import URLSafeTimedSerializer,BadSignature,SignatureExpired
 ROOT=Path(__file__).resolve().parent
 URL=os.getenv("DATABASE_URL","sqlite:///./globalglory.db")
+if URL.startswith("postgres://"): URL=URL.replace("postgres://","postgresql+psycopg://",1)
+elif URL.startswith("postgresql://"): URL=URL.replace("postgresql://","postgresql+psycopg://",1)
 engine=create_engine(URL,connect_args={"check_same_thread":False} if URL.startswith("sqlite") else {})
 DB=sessionmaker(bind=engine,autoflush=False,expire_on_commit=False)
 signer=URLSafeTimedSerializer(os.getenv("SECRET_KEY","dev-only-"+secrets.token_urlsafe(32)),salt="gg-session")
