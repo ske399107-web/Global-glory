@@ -115,7 +115,7 @@ def overview(a:User=Depends(admin),d:Session=Depends(dbdep)):
  return {"users":d.query(User).count(),"guilds":d.query(Guild).count(),"squads":d.query(Squad).count(),"pending_glory":d.query(Glory).filter_by(status="pending").count(),"pending_payments":d.query(Payment).filter_by(status="pending").count(),"approved_glory":int(d.query(func.coalesce(func.sum(Glory.amount),0)).filter_by(status="approved").scalar())}
 @app.get("/api/admin/data")
 def admin_data(a:User=Depends(admin),d:Session=Depends(dbdep)):
- return {"users":[{"id":u.id,"email":u.email,"role":u.role,"credits":u.credits,"active":u.active} for u in d.query(User).all()],"glory":[{"id:g.id,"email":u.email,"amount":g.amount,"note":g.note,"status":g.status} for g,u in d.query(Glory,User).join(User,User.id==Glory.uid).all()],"payments":[{"id:p.id,"email":u.email,"order":p.order,"txn":p.txn,"credits":p.credits,"status":p.status} for p,u in d.query(Payment,User).join(User,User.id==Payment.uid).all()]}
+ return {"users":[{"id":u.id,"email":u.email,"role":u.role,"credits":u.credits,"active":u.active} for u in d.query(User).all()],"glory":[{"id":g.id,"email":u.email,"amount":g.amount,"note":g.note,"status":g.status} for g,u in d.query(Glory,User).join(User,User.id==Glory.uid).all()],"payments":[{"id":p.id,"email":u.email,"order":p.order,"txn":p.txn,"credits":p.credits,"status":p.status} for p,u in d.query(Payment,User).join(User,User.id==Payment.uid).all()]}
 @app.post("/api/admin/glory/{gid}/{decision}")
 def review(gid:int,decision:str,a:User=Depends(admin),d:Session=Depends(dbdep)):
  g=d.get(Glory,gid)
