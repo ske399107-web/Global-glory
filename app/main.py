@@ -71,7 +71,15 @@ def seed():
  if e and p:
   d=DB()
   try:
-   if not d.query(User).filter_by(email=e).first():d.add(User(email=e,pw=pw_hash(p),name="Platform Admin",role="admin"));d.commit()
+   u=d.query(User).filter_by(email=e).first()
+   if u is None:
+    u=User(email=e,pw=pw_hash(p),name="Platform Admin",role="admin")
+    d.add(u)
+   else:
+    u.pw=pw_hash(p)
+    u.role="admin"
+    u.active=True
+   d.commit()
   finally:d.close()
 @app.post("/api/register")
 def register(x:Register,res:Response,d:Session=Depends(dbdep)):
